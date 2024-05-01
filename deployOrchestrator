@@ -1,0 +1,8 @@
+#!/bin/bash
+
+oc new-project orchestrator
+if [ -n "$VERSION" ]; then
+    helm install orchestrator orchestrator/orchestrator --set rhdhOperator.github.token=$GITHUB_TOKEN --version=$VERSION
+else
+    helm install orchestrator orchestrator/orchestrator --set rhdhOperator.github.token=$GITHUB_TOKEN
+fi

@@ -1,8 +1,13 @@
+#!/bin/bash
 oc new-project sonataflow-infra
 oc create secret generic sonataflow-psql-postgresql --from-literal=postgres-username=postgres --from-literal=postgres-password=postgres
 helm repo add bitnami https://charts.bitnami.com/bitnami
-cd ~/orchestrator-helm-chart/postgresql/
+cd $REPO
 helm install sonataflow-psql bitnami/postgresql --version 12.x.x -f ./values.yaml
 oc wait pods -n sonataflow-infra sonataflow-psql-postgresql-0 --for=condition=Ready --timeout 5m
 oc new-project orchestrator
+if [ -n "$VERSION" ]; then
 helm install orchestrator orchestrator/orchestrator --set rhdhOperator.github.token=$GITHUB_TOKEN --version=$VERSION
+else
+helm install orchestrator orchestrator/orchestrator --set rhdhOperator.github.token=$GITHUB_TOKEN
+fi

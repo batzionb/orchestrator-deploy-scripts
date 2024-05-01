@@ -1,0 +1,10 @@
+helm delete orchestrator --namespace orchestrator
+oc get crd -o name | grep -e 'sonataflow' -e rhdh | xargs oc delete
+oc delete pvc --all -n orchestrator
+oc delete ns rhdh-operator
+oc get crd -o name | grep knative.dev |  xargs oc delete
+
+# non-recoverable
+oc delete ns sonataflow-infra
+oc delete ns orchestrator
+oc delete pvc --all -n sonataflow-infra

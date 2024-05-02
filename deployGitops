@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+DIR="janus-idp-bootstrap"
+if [ -d "${REPOS_DIR}/$DIR" ]; then
+    echo "Directory $DIR already exists. Skipping git clone."
+else
+    git clone https://github.com/parodos-dev/janus-idp-bootstrap.git ${REPOS_DIR}/janus-idp-bootstrap
+fi
+
+cd ${REPOS_DIR}/janus-idp-bootstrap/charts
+helm upgrade --install orchestrator-pipelines pipelines-operator/ -f pipelines-operator/values.yaml -n orchestrator-gitops --create-namespace
+helm upgrade --install orchestrator-gitops gitops-operator/ -f gitops-operator/values.yaml -n orchestrator-gitops --create-namespace --set namespaces={orchestrator-gitops}
+
+oc create secret -n orchestrator-gitops generic git-ssh-credentials \
+  --from-file=${REPOS_DIR}/ssh/id_rsa \
+  --from-file=${REPOS_DIR}/ssh/config \
+  --from-file=${REPOS_DIR}/ssh/known_hosts
+
+oc create -f ~/docker-credentionals-secret.yaml

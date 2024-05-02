@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 oc new-project sonataflow-infra
 oc create secret generic sonataflow-psql-postgresql --from-literal=postgres-username=postgres --from-literal=postgres-password=postgres
 helm repo add bitnami https://charts.bitnami.com/bitnami

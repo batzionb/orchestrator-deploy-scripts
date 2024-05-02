@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 helm delete orchestrator --namespace orchestrator
 oc get crd -o name | grep -e 'sonataflow' -e rhdh | xargs oc delete
 oc delete pvc --all -n orchestrator
